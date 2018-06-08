@@ -1,6 +1,4 @@
-const Variable = require('./variable.js');
-const RightAssociativeOperator = require('./rightAssociativeOperator.js');
-const LeftAssociativeOperator = require('./leftAssociativeOperator.js');
+const Lexeme = require('./lexeme.js')
 
 class Lexer {
 	static analyze(string){
@@ -20,23 +18,10 @@ class Lexer {
 				flag = true;
 				let value = string.match(regex)[0];
 				let token;
-				switch (kind) {
-					case 'number':
-						token = new Number(parseInt(value));
-						break;
-					case 'variable':
-						token = new Variable(value);
-						break;
-					case 'operator':
-						if (LeftAssociativeOperator.check(value)){
-							token = new LeftAssociativeOperator(value);
-						}
-						else token = new RightsAssociativeOperator(value);
-						break;
+				if (['number', 'variable', 'operator'].includes(kind)) {
+					token = new Lexeme(kind, value);
 				}
-				if (token){
-					analyzedString.push(token);
-				}
+				if (token) analyzedString.push(token);
 				string = string.split(regex)[1];
 			}
 		}

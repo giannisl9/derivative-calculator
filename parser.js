@@ -1,63 +1,58 @@
-const Node = require('./node.js');
-const LeftAssociativeOperator = require('./leftAssociativeOperator.js');
-const RightAssociativeOperator = require('./rightAssociativeOperator.js');
-const Variable = require('./variable.js');
 const Lexer = require('./lexer.js');
+const ASTClasses = require('./ASTClasses/ASTClasses.js');
+const ASTVariable = ASTClasses.ASTVariable;
+const ASTOperator = ASTClasses.ASTOperator;
+const ASTConstant = ASTClasses.ASTConstant;
 
 class Parser {
 	static parse (tokenizedArray) {
 		var outputStack = [];
 		var operatorStack = [];
-		console.log(tokenizedArray);
 
 		tokenizedArray.forEach( function(token) {
-			let newNode = new Node(token);
-			if (token instanceof Number) {
-				outputStack.push(newNode);
+			if (token.type === 'number') {
+				let newASTConstant = new ASTConstant(token.value);
+				outputStack.push(newASTConstant);
 			}
-			else if (token instanceof LeftAssociativeOperator) {
+			else if (token.type === 'operator') {
 				if (operatorStack.length != 0 ) {
-					let previousOperator = operatorStack[operatorStack.length-1].context;
+					let previousOperator = operatorStack[operatorStack.length-1];
 
-					if (previousOperator instanceof LeftAssociativeOperator){
+					if (previousOperator.associativity = 'left'){
 						let child1 = outputStack.pop();
 						let child2 = outputStack.pop();
 						let replacementNode = operatorStack.pop();
-						replacementNode.childs.push(child1);
-						replacementNode.childs.push(child2);
+						replacementNode.children.push(child2, child1);
 						outputStack.push(replacementNode);
-						operatorStack.push(newNode);
+						operatorStack.push(new ASTOperator(token.value));
 					}
 				}
 				else {
-					operatorStack.push(newNode);
+					operatorStack.push(new ASTOperator(token.value));
 				}
 			}
 		});
 		while (operatorStack.length != 0 ) {
 			let replacementNode = operatorStack.pop();
-			console.log(replacementNode.childs);
 			let child1 = outputStack.pop();
 			let child2 = outputStack.pop();
-			replacementNode.childs.push(child1, child2);
+			replacementNode.children.push(child2, child1);
 			outputStack.push(replacementNode);
 		}
 		return outputStack.pop();
 	}
 
 	static convertToString(node) {
-		if (node.context instanceof Number){
-			return node.context.toString();
+		if (node instanceof ASTConstant){
+			return ASTConstant.toString();
 		}
 		else {
-			let right = Parser.convertToString(node.childs[0]);
-			let left = Parser.convertToString(node.childs[1]);
-			console.log(node);
+			let right = Parser.convertToString(node.children[0]);
+			let left = Parser.convertToString(node.children[1]);
 			return left + node.context.symbol + right;
 		}
 	}
 }
 
-let test1 = Parser.parse(Lexer.analyze("10+5-8+9-20"));
+let test1 = Parser.parse(Lexer.analyze("10+5-8"));
 console.log(test1);
-console.log(Parser.convertToString(test1));
