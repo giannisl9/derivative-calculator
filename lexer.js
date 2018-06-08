@@ -1,7 +1,6 @@
 const Variable = require('./variable.js');
 const RightAssociativeOperator = require('./rightAssociativeOperator.js');
 const LeftAssociativeOperator = require('./leftAssociativeOperator.js');
-const Operator = require('./operator.js');
 
 class Lexer {
 	static analyze(string){
