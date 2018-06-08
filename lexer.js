@@ -45,5 +45,5 @@ class Lexer {
 		return analyzedString;
 	}
 }
-console.log(Lexer.analyze("10 A+ x - y* 20"));
-console.log(Lexer.analyze("10+ x x- 2001"));
+
+module.exports = Lexer;
