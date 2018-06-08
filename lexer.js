@@ -1,3 +1,8 @@
+const Variable = require('./variable.js');
+const RightAssociativeOperator = require('./rightAssociativeOperator.js');
+const LeftAssociativeOperator = require('./leftAssociativeOperator.js');
+const Operator = require('./operator.js');
+
 class Lexer {
 	static analyze(string){
 		var associationMap = new Map()
@@ -24,7 +29,10 @@ class Lexer {
 						token = new Variable(value);
 						break;
 					case 'operator':
-						token = new Operator(value);
+						if (LeftAssociativeOperator.check(value)){
+							token = new LeftAssociativeOperator(value);
+						}
+						else token = new RightsAssociativeOperator(value);
 						break;
 				}
 				if (token){
@@ -38,18 +46,5 @@ class Lexer {
 		return analyzedString;
 	}
 }
-
-class Variable {
-	constructor(letter) {
-		this.letter = letter;
-	}
-}
-
-class Operator {
-	constructor(symbol) {
-		this.symbol = symbol;
-	}
-}
-
 console.log(Lexer.analyze("10 A+ x - y* 20"));
 console.log(Lexer.analyze("10+ x x- 2001"));
