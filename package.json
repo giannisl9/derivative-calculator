@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/giannisl9/derivative-calculator/issues"
   },
-  "homepage": "https://github.com/giannisl9/derivative-calculator#readme"
+  "homepage": "https://github.com/giannisl9/derivative-calculator#readme",
+  "devDependencies": {
+    "standard": "^11.0.1"
+  }
 }

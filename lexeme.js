@@ -1,8 +1,8 @@
 class Lexeme {
-	constructor(type, value){
-		this.type = type;
-		this.value = value;
-	}
+  constructor (type, value) {
+    this.type = type
+    this.value = value
+  }
 }
 
-module.exports = Lexeme;
+module.exports = Lexeme
