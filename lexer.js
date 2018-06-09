@@ -6,7 +6,7 @@ class Lexer {
       .set('number', /^[0-9]+/)
       .set('space', /^\s+/)
       .set('variable', /^[a-z]+/)
-      .set('operator', /^[+\-*]/)
+      .set('operator', /^[/+\-*]/)
 
     var analyzedString = []
     var flag
