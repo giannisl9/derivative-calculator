@@ -1,6 +1,7 @@
 const ASTClasses = require('./ASTClasses/ASTClasses.js')
 const ASTOperator = ASTClasses.ASTOperator
 const ASTConstant = ASTClasses.ASTConstant
+const ASTVariable = ASTClasses.ASTVariable
 
 module.exports = class Parser {
   static parse (tokenizedArray) {
@@ -10,6 +11,9 @@ module.exports = class Parser {
       if (token.type === 'number') {
         let newASTConstant = new ASTConstant(token.value)
         outputStack.push(newASTConstant)
+      } else if (token.type === 'variable') {
+        let newASTVariable = new ASTVariable(token.value)
+        outputStack.push(newASTVariable)
       } else if (token.type === 'operator') {
         let newASTOperator = new ASTOperator(token.value)
         if (operatorStack.length !== 0) {
@@ -55,7 +59,7 @@ module.exports = class Parser {
   }
 
   static convertToString (node) {
-    if (node instanceof ASTConstant) {
+    if (node instanceof ASTConstant || node instanceof ASTVariable) {
       return node.value
     } else {
       let right = Parser.convertToString(node.children[1])

@@ -20,8 +20,14 @@ class Lexer {
           flag = true
           let value = string.match(regex)[0]
           let token = new Lexeme(kind, value)
-          if (['leftParenthesis'].includes(token.type)) {
-            if (analyzedString[analyzedString.length - 1].type !== 'operator') {
+          if (['leftParenthesis'].includes(token.type) && analyzedString.length !== 0) {
+            if (['number', 'variable'].includes(analyzedString[analyzedString.length - 1].type)) {
+              let tmp = new Lexeme('operator', '*')
+              analyzedString.push(tmp)
+            }
+          }
+          if (['number', 'variable'].includes(token.type) && analyzedString.length != 0) {
+            if (analyzedString[analyzedString.length - 1].type === 'rightParenthesis') {
               let tmp = new Lexeme('operator', '*')
               analyzedString.push(tmp)
             }
