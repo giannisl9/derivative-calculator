@@ -1,3 +1,4 @@
+const Lexeme = require('./lexeme.js')
 const ASTClasses = require('./ASTClasses/ASTClasses.js')
 const ASTOperator = ASTClasses.ASTOperator
 const ASTConstant = ASTClasses.ASTConstant
@@ -5,10 +6,11 @@ const ASTVariable = ASTClasses.ASTVariable
 
 module.exports = class Parser {
   static parse (tokenizedArray) {
+    tokenizedArray = Parser.preParse(tokenizedArray)
     var outputStack = []
     var operatorStack = []
     tokenizedArray.forEach(function (token, index) {
-      if (token.type === 'number') {
+      if (token.type === 'constant') {
         let newASTConstant = new ASTConstant(token.value)
         outputStack.push(newASTConstant)
       } else if (token.type === 'variable') {
@@ -66,5 +68,22 @@ module.exports = class Parser {
       let left = Parser.convertToString(node.children[0])
       return '(' + left + node.value + right + ')'
     }
+  }
+
+  static preParse (tokenizedArray) {
+    let enrichedTokenizedArray = []
+    tokenizedArray.forEach(function (token, index) {
+      if (enrichedTokenizedArray.length !== 0) {
+        if (token.type === 'leftParenthesis' && ['constant', 'variable'].includes(tokenizedArray[index - 1].type)) {
+          let tmp = new Lexeme('operator', '*')
+          enrichedTokenizedArray.push(tmp)
+        } else if (['constant', 'variable'].includes(token.type) && tokenizedArray[index - 1].type === 'rightParenthesis') {
+          let tmp = new Lexeme('operator', '*')
+          enrichedTokenizedArray.push(tmp)
+        }
+      }
+      enrichedTokenizedArray.push(token)
+    })
+    return enrichedTokenizedArray
   }
 }
