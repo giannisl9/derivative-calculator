@@ -7,6 +7,8 @@ class Lexer {
       .set('space', /^\s+/)
       .set('variable', /^[a-z]+/)
       .set('operator', /^[/+\-*]/)
+      .set('leftParenthesis', /^\(/)
+      .set('rightParenthesis', /^\)/)
 
     var analyzedString = []
     var flag
@@ -17,11 +19,14 @@ class Lexer {
         if (regex.test(string)) {
           flag = true
           let value = string.match(regex)[0]
-          let token
-          if (['number', 'variable', 'operator'].includes(kind)) {
-            token = new Lexeme(kind, value)
+          let token = new Lexeme(kind, value)
+          if (['leftParenthesis'].includes(token.type)) {
+            if (analyzedString[analyzedString.length - 1].type !== 'operator') {
+              let tmp = new Lexeme('operator', '*')
+              analyzedString.push(tmp)
+            }
           }
-          if (token) analyzedString.push(token)
+          analyzedString.push(token)
           string = string.split(regex)[1]
         }
       }
