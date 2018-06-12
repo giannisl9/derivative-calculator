@@ -22,6 +22,7 @@ class Lexer {
           let token = new Lexeme(kind, value)
           analyzedString.push(token)
           string = string.split(regex)[1]
+          break
         }
       }
       if (!flag) return 0
