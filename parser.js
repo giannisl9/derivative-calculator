@@ -1,4 +1,4 @@
-const ASTClasses = require('./ASTClasses/ASTClasses.js')
+const ASTClasses = require('./AST/ASTClasses.js')
 const ASTOperator = ASTClasses.ASTOperator
 const ASTConstant = ASTClasses.ASTConstant
 const ASTVariable = ASTClasses.ASTVariable

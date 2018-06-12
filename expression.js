@@ -1,6 +1,6 @@
 const Lexer = require('./lexer.js')
 const Parser = require('./parser.js')
-const ASTClasses = require('./ASTClasses/ASTClasses.js')
+const ASTClasses = require('./AST/ASTClasses.js')
 const ASTConstant = ASTClasses.ASTConstant
 const ASTVariable = ASTClasses.ASTVariable
 
