@@ -1,34 +1,28 @@
 const Lexeme = require('./lexeme.js')
+const associationMap = new Map()
+  .set('constant', /^[0-9]+/)
+  .set('space', /^\s+/)
+  .set('variable', /^[a-z]+/)
+  .set('operator', /^[/+\-*]/)
+  .set('leftParenthesis', /^\(/)
+  .set('rightParenthesis', /^\)/)
 
-class Lexer {
-  static analyze (string) {
-    var associationMap = new Map()
-      .set('constant', /^[0-9]+/)
-      .set('space', /^\s+/)
-      .set('variable', /^[a-z]+/)
-      .set('operator', /^[/+\-*]/)
-      .set('leftParenthesis', /^\(/)
-      .set('rightParenthesis', /^\)/)
-
-    var analyzedString = []
-    var flag
-
-    while (string) {
-      flag = false
-      for (var [kind, regex] of associationMap) {
-        if (regex.test(string)) {
-          flag = true
-          let value = string.match(regex)[0]
-          let token = new Lexeme(kind, value)
-          analyzedString.push(token)
-          string = string.split(regex)[1]
-          break
-        }
+module.exports.lex = function (input) {
+  let analyzedString = []
+  if (input === '') throw 'empty input'
+  while (input) {
+    let found = false
+    for (var [kind, regex] of associationMap) {
+      if (regex.test(input)) {
+        found = true
+        let value = input.match(regex)[0]
+        let token = new Lexeme(kind, value)
+        analyzedString.push(token)
+        input = input.split(regex)[1]
+        break
       }
-      if (!flag) return 0
     }
-    return analyzedString
+    if (!found) throw 'invalid input'
   }
+  return analyzedString
 }
-
-module.exports = Lexer
