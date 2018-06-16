@@ -1,26 +1,24 @@
 const chai = require('chai')
 const assert = chai.assert
-const Lexer = require('../lexer.js')
+const lex = require('../lexer.js').lex
 const Lexeme = require('../lexeme.js')
 
 describe('Lexer', function () {
   describe('#analyze()', function () {
-    it('should return 0 given an empty string', function () {
-      let result = Lexer.analyze('')
-      assert.equal(result, 0)
+  it('should throw "empty input" when given an empty string', function () {
+      assert.throws(function () { lex('') }, 'empty input')
     })
-    it('should return 0 given a string including any symbol despite [+,-,*,/]', function () {
+  it('should throw "invalid input" when given a string including any symbol despite [+,-,*,/]', function () {
       let tests = ['%', '$', '10%1', '10#2+3', '10+2!3']
       tests.forEach(function (test) {
-        let result = Lexer.analyze(test)
-        assert.equal(result, 0)
+        assert.throws(function () { lex(test) }, 'invalid input')
       })
     })
     it('should return an array with a lexeme{ type: constant, value: x } for any number x', function () {
       let tests = ['1', '10', '21', '100']
       tests.forEach(function (test) {
         let expected = [new Lexeme('constant', test)]
-        let result = Lexer.analyze(test)
+        let result = lex(test)
         assert.deepEqual(result, expected)
         assert.instanceOf(result[0], Lexeme.prototype.constructor)
       })
@@ -29,7 +27,7 @@ describe('Lexer', function () {
       let tests = ['x', 'k', 'l', 'm']
       tests.forEach(function (test) {
         let expected = [new Lexeme('variable', test)]
-        let result = Lexer.analyze(test)
+        let result = lex(test)
         assert.deepEqual(result, expected)
         assert.instanceOf(result[0], Lexeme.prototype.constructor)
       })
@@ -38,23 +36,23 @@ describe('Lexer', function () {
       let tests = ['+', '-', '*', '/']
       tests.forEach(function (test) {
         let expected = [new Lexeme('operator', test)]
-        let result = Lexer.analyze(test)
+        let result = lex(test)
         assert.deepEqual(result, expected)
         assert.instanceOf(result[0], Lexeme.prototype.constructor)
       })
     })
     it('should return an array with a lexeme{ type: leftParenthesis, value: ( } for left parenthesis', function () {
       let expected = [new Lexeme('leftParenthesis', '(')]
-      let result = Lexer.analyze('(')
+      let result = lex('(')
       assert.deepEqual(result, expected)
     })
      it('should return an array with a lexeme{ type: rightParenthesis, value: ) } for right parenthesis', function () {
       let expected = [new Lexeme('rightParenthesis', ')')]
-      let result = Lexer.analyze(')')
+      let result = lex(')')
       assert.deepEqual(result, expected)
     })
    it('should return an array with the corresponding lexemes for any string containing one or more constants, variables, operators, parentheses', function () {
-      let result = [Lexer.analyze('10+x'), Lexer.analyze('20*y'), Lexer.analyze('100/k+z'), Lexer.analyze('(200)+)')]
+      let result = [lex('10+x'), lex('20*y'), lex('100/k+z'), lex('(200)+)')]
       let expected = [
         [new Lexeme('constant', '10'), new Lexeme('operator', '+'), new Lexeme('variable', 'x')],
         [new Lexeme('constant', '20'), new Lexeme('operator', '*'), new Lexeme('variable', 'y')],
