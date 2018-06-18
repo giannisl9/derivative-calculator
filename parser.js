@@ -3,77 +3,69 @@ const ASTOperator = ASTClasses.ASTOperator
 const ASTConstant = ASTClasses.ASTConstant
 const ASTVariable = ASTClasses.ASTVariable
 
-module.exports = class Parser {
-  constructor () {
-    this.outputStack = []
-    this.operatorStack = []
-  }
+module.exports.parse = function (tokenizedArray) {
+  let outputStack = []
+  let operatorStack = []
 
-  parse (tokenizedArray) {
-    this.tokenizedArray = tokenizedArray
-    if (this.checkTokens() === false) return 'invalid token'
-    for (var i = 0; i < this.tokenizedArray.length; i++) {
-      let token = this.tokenizedArray[i]
-      let parseMessage = 'success'
-      switch (token.type) {
-        case 'operator':
-          let newASTOperator = new ASTOperator(token.value)
-          parseMessage = this.parseOperator(newASTOperator)
-          break
-        case 'rightParenthesis':
-          parseMessage = this.parseRightParenthesis()
-          break
-        case 'constant':
-          let newASTConstant = new ASTConstant(token.value)
-          parseMessage = this.parseConstant(newASTConstant, i)
-          break
-        case 'variable':
-          let newASTVariable = new ASTVariable(token.value)
-          parseMessage = this.parseVariable(newASTVariable, i)
-          break
-        case 'leftParenthesis':
-          parseMessage = this.parseLeftParenthesis(token, i)
-          break
-      }
-      if (parseMessage !== 'success') {
-        return parseMessage
-      }
+  tokenizedArray.forEach(function (token, index) {
+    let parseMessage = 'success'
+    switch (token.type) {
+      case 'operator':
+        let newASTOperator = new ASTOperator(token.value)
+        parseMessage = parseOperator(newASTOperator)
+        break
+      case 'rightParenthesis':
+        parseMessage = parseRightParenthesis()
+        break
+      case 'constant':
+        let newASTConstant = new ASTConstant(token.value)
+        parseMessage = parseConstant(newASTConstant, index)
+        break
+      case 'variable':
+        let newASTVariable = new ASTVariable(token.value)
+        parseMessage = parseVariable(newASTVariable, index)
+        break
+      case 'leftParenthesis':
+        parseMessage = parseLeftParenthesis(token, index)
+        break
     }
-    while (this.operatorStack.length !== 0) this.popFromOperatorStackPushToOutputStack()
-    return this.outputStack.pop()
-  }
+    if (parseMessage !== 'success') {
+      return parseMessage
+    }
+  })
+  while (operatorStack.length !== 0) popFromOperatorStackPushToOutputStack()
+  return outputStack.pop()
 
-  parseLeftParenthesis (token, i) {
+  function parseLeftParenthesis (token, i) {
     let parseMessage = 'success'
     if (i > 0) {
-      if (['variable', 'constant', 'rightParenthesis'].includes(this.tokenizedArray[i - 1].type)) {
+      if (['variable', 'constant', 'rightParenthesis'].includes(tokenizedArray[i - 1].type)) {
         let newASTOperator = new ASTOperator('*')
-        parseMessage = this.parseOperator(newASTOperator)
+        parseMessage = parseOperator(newASTOperator)
       }
     }
     if (parseMessage !== 'success') return 'failed to add missing operator'
-    this.operatorStack.push(token)
+    operatorStack.push(token)
     return 'success'
   }
 
-  parseConstant (ASTConstant, i) {
-    this.outputStack.push(ASTConstant)
+  function parseConstant (ASTConstant, i) {
+    outputStack.push(ASTConstant)
     return 'success'
   }
 
-  parseVariable (ASTVariable, i) {
-    this.outputStack.push(ASTVariable)
+  function parseVariable (ASTVariable, i) {
+    outputStack.push(ASTVariable)
     return 'success'
   }
-
-  checkLastInOperatorStack () {
-    if (this.operatorStack.length === 0) return 'operatorStack empty'
-    let lastOperator = this.operatorStack[this.operatorStack.length - 1]
+  function checkLastInOperatorStack () {
+    if (operatorStack.length === 0) return 'operatorStack empty'
+    let lastOperator = operatorStack[operatorStack.length - 1]
     if (lastOperator instanceof ASTOperator) return 'operator'
     return 'leftParenthesis'
   }
 
-  parseRightParenthesis () {
+  function parseRightParenthesis () {
     let foundLeftParenthesis = false
     let continuieLoop = true
     do {
@@ -84,10 +76,10 @@ module.exports = class Parser {
         case 'leftParenthesis':
           continuieLoop = false
           foundLeftParenthesis = true
-          this.operatorStack.pop()
+          operatorStack.pop()
           break
         case 'operator':
-          this.popFromOperatorStackPushToOutputStack()
+          popFromOperatorStackPushToOutputStack()
           break
       }
     } while (continuieLoop)
@@ -97,35 +89,28 @@ module.exports = class Parser {
     return 'success'
   }
 
-  popFromOperatorStackPushToOutputStack () {
-    let child1 = this.outputStack.pop()
-    let child2 = this.outputStack.pop()
-    let replacementNode = this.operatorStack.pop()
+  function popFromOperatorStackPushToOutputStack () {
+    let child1 = outputStack.pop()
+    let child2 = outputStack.pop()
+    let replacementNode = operatorStack.pop()
     replacementNode.children.push(child2, child1)
-    this.outputStack.push(replacementNode)
+    outputStack.push(replacementNode)
   }
 
-  parseOperator (ASTOperator) {
-    switch (this.checkLastInOperatorStack()) {
+  function parseOperator (ASTOperator) {
+    switch (checkLastInOperatorStack()) {
       case 'operatorStack empty':
       case 'leftParenthesis':
-        this.operatorStack.push(ASTOperator)
+        operatorStack.push(ASTOperator)
         break
       case 'operator':
-        let previousOperator = this.operatorStack[this.operatorStack.length - 1]
+        let previousOperator = operatorStack[operatorStack.length - 1]
         if (previousOperator.precedence >= ASTOperator.precedence && ASTOperator.associativity === 'left') {
-          this.popFromOperatorStackPushToOutputStack()
+          popFromOperatorStackPushToOutputStack()
         }
-        this.operatorStack.push(ASTOperator)
+        operatorStack.push(ASTOperator)
         break
     }
     return 'success'
-  }
-
-  checkTokens () {
-    this.tokenizedArray.forEach(function (token) {
-      if (!['operator', 'constant', 'variable', 'leftParenthesis', 'rightParenthesis'].includes(token)) return false
-    })
-    return true
   }
 }
