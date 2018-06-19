@@ -92,6 +92,7 @@ module.exports.parse = function (tokenizedArray) {
   function popFromOperatorStackPushToOutputStack () {
     let child1 = outputStack.pop()
     let child2 = outputStack.pop()
+    if (child1 === undefined || child2 === undefined) throw 'failed to parse operator'
     let replacementNode = operatorStack.pop()
     replacementNode.children.push(child2, child1)
     outputStack.push(replacementNode)

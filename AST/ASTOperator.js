@@ -5,6 +5,7 @@ module.exports = class ASTOperator extends ASTNode {
     super(value)
     this.associativity = ASTOperator.findType(value)
     this.precedence = ASTOperator.findPrecedence(value)
+    this.children = []
   }
 
   static findType (value) {
