@@ -1,11 +1,12 @@
 var ASTNode = require('./ASTNode.js')
 
 module.exports = class ASTOperator extends ASTNode {
-  constructor (value) {
+  constructor (value, child1, child2) {
     super(value)
     this.associativity = ASTOperator.findType(value)
     this.precedence = ASTOperator.findPrecedence(value)
-    this.children = []
+    if (child1 instanceof ASTNode && child2 instanceof ASTNode) this.children = [child1, child2]
+    else this.children = []
   }
 
   static findType (value) {

@@ -16,7 +16,12 @@ describe('parse()', function () {
   it('should parse any lexeme{ type: variable, value: x } as an ASTVariable', function () {
     expect(parse([new Lexeme('variable', 'x')])).to.deep.equal(new ASTVariable('x'))
   })
-  it('should throw "fail to parse operator" for any lexeme{ type: operator, value x }', function() {
+  it('should throw "failed to parse operator" for any lexeme{ type: operator, value x }', function() {
     expect(function () { parse([new Lexeme('operator', '+')]) }).to.throw('failed to parse operator')
+  })
+  it('should return the corresponding root of the AST for any valid tokenized array (test 1)', function () {
+    expect(parse([new Lexeme('constant', '10'), new Lexeme('operator', '+'), new Lexeme('variable', 'x')])).to.deep.equal(
+      new ASTOperator('+', new ASTConstant('10'), new ASTConstant('x'))
+    )
   })
 })
