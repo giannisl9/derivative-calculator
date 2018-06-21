@@ -24,4 +24,17 @@ describe('parse()', function () {
       new ASTOperator('+', new ASTConstant('10'), new ASTConstant('x'))
     )
   })
+  it('should return the corresponding root of the AST for any valid tokenized array (test 2)', function () {
+    expect(parse([
+      new Lexeme('constant', '10'),
+      new Lexeme('operator', '*'),
+      new Lexeme('leftParenthesis', '('),
+      new Lexeme('variable', 'x'),
+      new Lexeme('operator', '+'),
+      new Lexeme('constant', '100'),
+      new Lexeme('rigthParenthesis', ')')
+    ])).to.deep.equal(
+      new ASTOperator('*', new ASTConstant('10'), new ASTOperator('+', new ASTVariable('x'), new ASTConstant('100')))
+    )
+  })
 })
