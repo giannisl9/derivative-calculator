@@ -20,11 +20,26 @@ describe('parse()', function () {
     expect(function () { parse([new Lexeme('operator', '+')]) }).to.throw('failed to parse operator')
   })
   it('should return the corresponding root of the AST for any valid tokenized array (test 1)', function () {
-    expect(parse([new Lexeme('constant', '10'), new Lexeme('operator', '+'), new Lexeme('variable', 'x')])).to.deep.equal(
+    expect(parse([
+      new Lexeme('constant', '10'),
+      new Lexeme('operator', '+'),
+      new Lexeme('variable', 'x')
+    ])).to.deep.equal(
       new ASTOperator('+', new ASTConstant('10'), new ASTConstant('x'))
     )
   })
   it('should return the corresponding root of the AST for any valid tokenized array (test 2)', function () {
+    expect(parse([
+      new Lexeme('leftParenthesis', '('),
+      new Lexeme('variable', 'x'),
+      new Lexeme('operator', '+'),
+      new Lexeme('constant', '23'),
+      new Lexeme('rightParenthesis', ')')
+    ])).to.deep.equal(
+      new ASTOperator('+', new ASTVariable('x'), new ASTConstant('23'))
+    )
+  })
+  it('should return the corresponding root of the AST for any valid tokenized array (test 3)', function () {
     expect(parse([
       new Lexeme('constant', '10'),
       new Lexeme('operator', '*'),
@@ -32,22 +47,22 @@ describe('parse()', function () {
       new Lexeme('variable', 'x'),
       new Lexeme('operator', '+'),
       new Lexeme('constant', '100'),
-      new Lexeme('rigthParenthesis', ')')
+      new Lexeme('rightParenthesis', ')')
     ])).to.deep.equal(
       new ASTOperator('*', new ASTConstant('10'), new ASTOperator('+', new ASTVariable('x'), new ASTConstant('100')))
     )
   })
-  it('should return the corresponding root of the AST for any valid tokenized array (test 3)', function () {
+  it('should return the corresponding root of the AST for any valid tokenized array (test 4)', function () {
     expect(parse([
       new Lexeme('leftParenthesis', '('),
       new Lexeme('constant', '20'),
       new Lexeme('operator', '-'),
-      new Lexeme('variable', 'k'),
+      new Lexeme('variable', 'x'),
       new Lexeme('rightParenthesis', ')'),
       new Lexeme('operator', '/'),
       new Lexeme('variable', 'k')
     ])).to.deep.equal(
-      new ASTOperator('/', new ASTOperator('-', new ASTConstant('20'), new ASTVariable('k')), new ASTVariable('k'))
+      new ASTOperator('/', new ASTOperator('-', new ASTConstant('20'), new ASTVariable('x')), new ASTVariable('k'))
     )
   })
 })
