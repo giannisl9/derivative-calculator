@@ -6,7 +6,6 @@ const ASTVariable = ASTClasses.ASTVariable
 module.exports.parse = function parse (tokenizedArray) {
   let outputStack = []
   let operatorStack = []
-  let inParenthesisStack = []
   let inParenthesis = false
   let parenthesisStartIndex = -1
   let countLeftParenthesis = 0
@@ -48,8 +47,6 @@ module.exports.parse = function parse (tokenizedArray) {
           inParenthesisStack = []
         } else countLeftParenthesis -= 1
         break
-      default:
-        inParenthesisStack.push(token)
     }
   }
 
