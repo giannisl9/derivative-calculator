@@ -19,6 +19,14 @@ describe('parse()', function () {
   it('should throw "failed to parse operator" for any lexeme{ type: operator, value x }', function() {
     expect(function () { parse([new Lexeme('operator', '+')]) }).to.throw('failed to parse operator')
   })
+  it('should parse -constant (beginning) and (-constant) as an ASTConstant with negative value (x: any positive constant)', function () {
+    expect(parse([
+      new Lexeme('operator', '-'),
+      new Lexeme('number', '10')
+    ])).to.deep.equal(
+      new ASTConstant('-10')
+    )
+  })
   it('should return the corresponding root of the AST for any valid tokenized array (test 1)', function () {
     expect(parse([
       new Lexeme('constant', '10'),
