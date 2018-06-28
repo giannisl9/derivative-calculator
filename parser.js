@@ -44,7 +44,6 @@ module.exports.parse = function parse (tokenizedArray) {
           let tmp = parse(tokenizedArray.slice(parenthesisStartIndex + 1, index))
           outputStack.push(tmp)
           inParenthesis = false
-          inParenthesisStack = []
         } else countLeftParenthesis -= 1
         break
     }
