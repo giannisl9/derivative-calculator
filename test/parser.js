@@ -19,10 +19,20 @@ describe('parse()', function () {
   it('should throw "failed to parse operator" for any lexeme{ type: operator, value x }', function() {
     expect(function () { parse([new Lexeme('operator', '+')]) }).to.throw('failed to parse operator')
   })
-  it('should distinguish a sign from a binary operator', function () {
+  it('should distinguish a sign from a binary operator (test 1)', function () {
     expect(parse([
       new Lexeme('constant', '10'),
       new Lexeme('operator', '-'),
+      new Lexeme('sign', '-'),
+      new Lexeme('variable', 'x')
+    ])).to.deep.equal(
+      new ASTOperator('-', new ASTConstant('10'), new ASTSign('-', new ASTVariable('x')))
+    )
+  })
+  it('should distinguish a sign from a binary operator (test 2)', function () {
+    expect(parse([
+      new Lexeme('sign', '-'),
+      new Lexeme('sign', '-'),
       new Lexeme('sign', '-'),
       new Lexeme('variable', 'x')
     ])).to.deep.equal(
